@@ -1,84 +1,92 @@
-/*=============== SHOW MENU ===============*/
-const navMenu = document.getElementById('nav-menu'),
-      navToggle = document.getElementById('nav-toggle'),
-      navClose = document.getElementById('nav-close')
+let isScroll = false
 
-/*===== MENU SHOW =====*/
-/* Validate if constant exists */
-if(navToggle){
-    navToggle.addEventListener('click', () =>{
-        navMenu.classList.add('show-menu')
-    })
-}
+scrollSlide = () => {
 
-/*===== MENU HIDDEN =====*/
-/* Validate if constant exists */
-if(navClose){
-    navClose.addEventListener('click', () =>{
-        navMenu.classList.remove('show-menu')
-    })
-}
+    if (isScroll) return
 
-/*=============== REMOVE MENU MOBILE ===============*/
-const navLink = document.querySelectorAll('.nav__link')
+    isScroll = true
 
-function linkAction(){
-    const navMenu = document.getElementById('nav-menu')
-    // When we click on each nav__link, we remove the show-menu class
-    navMenu.classList.remove('show-menu')
-}
-navLink.forEach(n => n.addEventListener('click', linkAction))
+    let currProduct = document.querySelector('.product-info.active')
+    currProduct.classList.remove('active')
+    productIndex = productIndex + 1 > productInfos.length - 1 ? 0 : productIndex + 1
+    productInfos[productIndex].classList.add('active')
 
-/*=============== CHANGE BACKGROUND HEADER ===============*/
-function scrollHeader(){
-    const header = document.getElementById('header')
-    // When the scroll is greater than 50 viewport height, add the scroll-header class to the header tag
-    if(this.scrollY >= 50) header.classList.add('scroll-header'); else header.classList.remove('scroll-header')
-}
-window.addEventListener('scroll', scrollHeader)
+    let  listitems = document.querySelectorAll('.slide')
 
-/*=============== SHOW SCROLL UP ===============*/ 
-function scrollUp(){
-    const scrollUp = document.getElementById('scroll-up');
-    // When the scroll is higher than 200 viewport height, add the show-scroll class to the a tag with the scroll-top class
-    if(this.scrollY >= 200) scrollUp.classList.add('show-scroll'); else scrollUp.classList.remove('show-scroll')
-}
-window.addEventListener('scroll', scrollUp)
+    let slider = document.querySelector('.slider')
 
-/*=============== SCROLL SECTIONS ACTIVE LINK ===============*/
-const sections = document.querySelectorAll('section[id]')
+    let reverse = Array.from(listitems).slice().reverse()
 
-function scrollActive(){
-    const scrollY = window.pageYOffset
+    left = reverse[0].offsetLeft+'px'
+    height = reverse[0].offsetHeight+'px'
+    width = reverse[0].offsetWidth+'px'
+    zIndex = reverse[0].style.zIndex
 
-    sections.forEach(current =>{
-        const sectionHeight = current.offsetHeight
-        const sectionTop = current.offsetTop - 50;
-        sectionId = current.getAttribute('id')
+    reverse.forEach((el, index) => {
+    
+        if (index < listitems.length-1) {
+            el.style.left = reverse[index + 1].offsetLeft+'px'
+            el.style.height = reverse[index + 1].offsetHeight+'px'
+            el.style.width = reverse[index + 1].offsetWidth+'px'
+            el.style.zIndex = index + 1
+            el.style.transform = 'unset'
+            el.style.opacity = '1'
+        }
+        if (index === listitems.length - 1) {
+            el.style.transform = 'scale(1.5)'
+            el.style.opacity = '0'
 
-        if(scrollY > sectionTop && scrollY <= sectionTop + sectionHeight){
-            document.querySelector('.nav__menu a[href*=' + sectionId + ']').classList.add('active-link')
-        }else{
-            document.querySelector('.nav__menu a[href*=' + sectionId + ']').classList.remove('active-link')
+            let cln = el.cloneNode(true)
+            
+            setTimeout(() => {
+                el.remove()
+                cln.style.transform = 'scale(0)'
+                cln.style.left = left
+                cln.style.height = height
+                cln.style.width = width
+                // cln.style.transform = 'unset'
+                cln.style.opacity = '0'
+                cln.style.zIndex = 0
+                cln.style.animation = 'unset'
+                slider.appendChild(cln)
+                isScroll = false
+            }, 1000);
         }
     })
+    listitems = document.querySelectorAll('.slide')
+    listitems[0].style.zIndex = '4'
 }
-window.addEventListener('scroll', scrollActive)
 
-/*=============== SCROLL REVEAL ANIMATION ===============*/
-const sr = ScrollReveal({
-    distance: '60px',
-    duration: 2500,
-    delay: 400,
-    // reset: true
-})
+let productIndex = 0
 
-sr.reveal(`.home__header, .section__title`,{delay: 600})
-sr.reveal(`.home__footer`,{delay: 700})
-sr.reveal(`.home__img`,{delay: 900, origin: 'top'})
+let productInfos = document.querySelectorAll('.product-info')
 
-sr.reveal(`.sponsor__img, .products__card, .footer__logo, .footer__content, .footer__copy`,{origin: 'top', interval: 100})
-sr.reveal(`.specs__data, .discount__animate`,{origin: 'left', interval: 100})
-sr.reveal(`.specs__img, .discount__img`,{origin: 'right'})
-sr.reveal(`.case__img`,{origin: 'top'})
-sr.reveal(`.case__data`)
+setTimeout(() => {
+    productInfos[productIndex].classList.add('active')
+}, 200);
+
+let slideControl = document.querySelector('.slide-control')
+
+slideControl.onclick = (e) => {
+    scrollSlide()
+}
+
+openNav = () => {
+    let nav = document.querySelector('.nav-overlay')
+    let hamb = document.querySelector('.hamburger')
+    nav.classList.toggle('active')
+    hamb.classList.toggle('active')
+}
+
+// let hambBtn = document.querySelector('.hamburger-btn')
+
+// let hamb = hambBtn.querySelector('.hamburger')
+
+// hambBtn.onclick = () => {
+//     hamb.classList.toggle('active')
+// }
+
+// scrollSlide()
+// setInterval(() => {
+//     scrollSlide()
+// }, 2200);
